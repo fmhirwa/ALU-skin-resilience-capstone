@@ -1,0 +1,10 @@
+@import "tailwindcss";
+
+/* Custom tokens & layers (optional) */
+@layer theme {
+  :root {
+    --risk-low: #4caf50;
+    --risk-mid: #ffb300;
+    --risk-high: #d32f2f;
+  }
+}
