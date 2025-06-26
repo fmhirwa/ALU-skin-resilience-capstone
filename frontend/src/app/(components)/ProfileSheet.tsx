@@ -13,6 +13,7 @@ import Switch from '@mui/material/Switch';
 import Divider from '@mui/material/Divider';
 import Button from '@mui/material/Button';
 import { useSettings } from '../(providers)/settings-provider';
+import { SelectChangeEvent } from '@mui/material/Select';
 
 export default function ProfileSheet({
   open, onClose
@@ -47,8 +48,8 @@ export default function ProfileSheet({
           <Select
             value={gender}
             label="Gender"
-            onChange={(e: React.ChangeEvent<{ value: unknown }>) =>
-              set({ gender: e.target.value as 'male' | 'female' | 'other' | 'na' })
+            onChange={(e: SelectChangeEvent) =>
+            set({ gender: e.target.value as 'male' | 'female' | 'other' | 'na' })
             }
           >
             <MenuItem value="male">Male</MenuItem>
