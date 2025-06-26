@@ -47,13 +47,16 @@ export default function ProfileSheet({
           <Select
             value={gender}
             label="Gender"
-            onChange={e => set({ gender: e.target.value as any })}
+            onChange={(e: React.ChangeEvent<{ value: unknown }>) =>
+              set({ gender: e.target.value as 'male' | 'female' | 'other' | 'na' })
+            }
           >
             <MenuItem value="male">Male</MenuItem>
             <MenuItem value="female">Female</MenuItem>
             <MenuItem value="other">Other</MenuItem>
             <MenuItem value="na">Prefer not to say</MenuItem>
           </Select>
+
         </FormControl>
 
         <Divider />

@@ -15,7 +15,7 @@ export default function LocationBanner() {
     /* naive geocoding via Nominatim; replace with Places API */
     fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(draft)}&format=json&limit=1`)
       .then(r => r.json())
-      .then((arr: any[]) => {
+      .then((arr: { lat: string; lon: string; display_name: string }[]) => {
         if (arr[0]) {
           const { lat, lon, display_name } = arr[0];
           set({ location: { lat: +lat, lon: +lon, city: display_name } });
