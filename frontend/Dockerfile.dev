@@ -1,0 +1,10 @@
+# frontend/Dockerfile.dev
+FROM node:18
+
+WORKDIR /usr/src/app
+COPY package*.json ./
+RUN npm install
+
+# all source will be mounted as a volume; no COPY needed
+EXPOSE 3000
+CMD ["npm", "run", "dev", "--", "--hostname", "0.0.0.0"]
