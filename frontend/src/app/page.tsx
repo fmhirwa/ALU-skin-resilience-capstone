@@ -46,10 +46,10 @@ export default function Home() {
 
       <Container sx={{ py: 3 }}>
         <Grid container spacing={3}>
-          <Grid xs={12} md={4}>
+          <Grid size={{ xs: 12, md: 4 }}>
             <RiskCard />
           </Grid>
-          <Grid xs={12} md={8}>
+          <Grid size={{ xs: 12, md: 8 }}>
             <RecommendationCard />
           </Grid>
         </Grid>
