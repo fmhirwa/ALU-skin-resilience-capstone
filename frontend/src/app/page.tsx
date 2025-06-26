@@ -7,6 +7,7 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import Avatar from '@mui/material/Avatar';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
+/*import Grid from '@mui/material/Grid';*/
 
 import LocationBanner from './(components)/LocationBanner';
 import RiskCard from './(components)/RiskCard';
@@ -45,10 +46,10 @@ export default function Home() {
 
       <Container sx={{ py: 3 }}>
         <Grid container spacing={3}>
-          <Grid item xs={12} md={4}>
+          <Grid xs={12} md={4}>
             <RiskCard />
           </Grid>
-          <Grid item xs={12} md={8}>
+          <Grid xs={12} md={8}>
             <RecommendationCard />
           </Grid>
         </Grid>
