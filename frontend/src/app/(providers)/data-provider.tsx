@@ -1,33 +1,33 @@
-// app/(providers)/data-provider.tsx
 'use client';
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, {
+  createContext, useContext, useEffect, useState, useCallback,
+} from 'react';
 import { useSettings } from './settings-provider';
 
-/* ---------- map UI skin-tone strings -> int expected by backend ---------- */
-const TONE_MAP: Record<string, number> = { light: 1, medium: 2, dark: 3, deep: 4 };
+/* ---------- UI → model tone map ---------- */
+const TONE_MAP = { light: 1, medium: 2, dark: 3, deep: 4 } as const;
 
-/* ---------- env ---------- */
-const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL ?? '';      // «https://…onrender.com»
+/* ---------- where to reach the backend ----------
+   • If NEXT_PUBLIC_BACKEND_URL is defined it is called directly.
+   • Otherwise it falls back to the Next.js edge-proxy (/api).           */
+const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL ?? '';
 
-/* ---------- types ---------- */
+type Weather = { temp: number | null; uv: number | null };
+
 type DataState = {
-  /* payload ---------------------------------------------------------------- */
-  risk:            number | null;
-  recommendation:  string | null;
-  lastUpdated:     Date   | null;
-
-  /* ui flags --------------------------------------------------------------- */
-  loading:        boolean;
-  error:          string | null;
-  backendReady:   boolean;
-
-  /* actions ---------------------------------------------------------------- */
+  risk: number | null;
+  recommendation: string | null;
+  lastUpdated: Date | null;
+  weather: Weather | null;
+  loading: boolean;
+  error: string | null;
+  backendReady: boolean;
   fetchNow: () => Promise<void>;
 };
 
 const DataContext = createContext<DataState | null>(null);
 
-/* ---------- provider ---------- */
+/* ===================================================================== */
 export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const settings = useSettings();
 
@@ -35,67 +35,65 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     risk: null,
     recommendation: null,
     lastUpdated: null,
+    weather: null,
     loading: false,
     error: null,
-    backendReady: false
+    backendReady: false,
   });
 
-  /* -------- ping Render backend until it wakes up -------- */
+  /* ---------- keep pinging /healthz until the dyno wakes up ----------- */
   useEffect(() => {
+    if (state.backendReady) return;
+
     let cancelled = false;
-
-    const poll = async () => {
+    const ping = async () => {
       try {
-        /* any cheap endpoint you expose; 200 when ready */
-        const r = await fetch(`${API_BASE}/healthz`, { cache: 'no-store' });
-        if (!cancelled && r.ok) setState(s => ({ ...s, backendReady: true }));
-      } catch { /* ignore until next attempt */ }
+        const r = await fetch(`${API_BASE || '/api'}/healthz`, { cache: 'no-store' });
+        if (!cancelled && r.ok) setState(p => ({ ...p, backendReady: true }));
+      } catch { /* ignore – retry */ }
 
-      if (!cancelled && !state.backendReady) setTimeout(poll, 5_000);
+      if (!cancelled && !state.backendReady) setTimeout(ping, 5_000);
     };
-
-    poll();
+    ping();
     return () => { cancelled = true; };
   }, [state.backendReady]);
 
-  /* -------- main fetch -------- */
-  const fetchNow = async () => {
-    if (!settings.location) return;               // wait for user location
-
+  /* ---------- main fetch  -------------------------------------------- */
+  const fetchNow = useCallback(async () => {
+    if (!settings.location) return;          // wait until we have geo-coords
     try {
-      setState(s => ({ ...s, loading: true, error: null }));
+      setState(p => ({ ...p, loading: true, error: null }));
 
       const { lat, lon } = settings.location;
-      const params     = new URLSearchParams({
-        lat:    lat.toString(),
-        lon:    lon.toString(),
-        tone:   TONE_MAP[settings.skinTone]?.toString() ?? '3',
-        gender: settings.gender
+      const qs = new URLSearchParams({
+        lat: String(lat),
+        lon: String(lon),
+        tone: String(TONE_MAP[settings.skinTone] ?? 3),
+        gender: settings.gender,
       });
 
-      const res  = await fetch(`/api/risk?${params}`);
+      const res = await fetch(`${API_BASE || '/api'}/risk?${qs}`, { cache: 'no-store' });
       if (!res.ok) throw new Error(await res.text());
 
-      const { score, advice } = await res.json() as { score: number; advice: string };
+      const { score, advice, temp_c, uv_wm2 } = await res.json();
 
-      setState({
-        risk: score,
-        recommendation: advice,
+      setState(p => ({
+        ...p,
+        risk: score ?? null,
+        recommendation: advice ?? null,
+        weather: { temp: temp_c ?? null, uv: uv_wm2 ?? null },
         lastUpdated: new Date(),
         loading: false,
-        error: null,
-        backendReady: true             // mark ready on first success
-      });
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Unknown error';
-      setState(s => ({ ...s, loading: false, error: msg }));
+        backendReady: true,
+      }));
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      setState(p => ({ ...p, loading: false, error: message }));
     }
-  };
+  }, [settings]);
 
-  /* refetch whenever inputs change */
-  useEffect(() => { fetchNow(); },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [settings.location, settings.skinTone, settings.gender]);
+  /* auto-fetch whenever user settings change (tone, gender, location) */
+  useEffect(() => { fetchNow(); }, [fetchNow]);
 
   return (
     <DataContext.Provider value={{ ...state, fetchNow }}>
@@ -104,7 +102,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   );
 };
 
-/* ---------- hook ---------- */
+/* little helper so consumers don’t need to null-check */
 export const useData = () => {
   const ctx = useContext(DataContext);
   if (!ctx) throw new Error('useData must be used inside <DataProvider>');

@@ -7,3 +7,29 @@ This project builds a daylight-focused machine-learning pipeline that links ERA5
 
 ## UI mockups can be found in the UI folder.
 ## Demo: https://youtu.be/CjdaFZ9JN3Q
+
+
+Local RUn
+
+cd backend
+
+# create & activate a venv
+python -m venv .venv
+# on macOS/Linux:
+source .venv/bin/activate
+# on Windows:
+.\.venv\Scripts\Activate.ps1
+
+# install dependencies
+pip install -r requirements.txt
+
+# Run
+python -m uvicorn main:app --reload
+
+## Frontend
+
+cd ../frontend
+npm install
+npm run dev
+
+NEXT_PUBLIC_BACKEND_URL=http://localhost:8000

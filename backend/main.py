@@ -1,84 +1,149 @@
-# ---------- FastAPI micro-service ----------
-import joblib, requests, pandas as pd, numpy as np
+# FastAPI micro-service for UV / temperature risk scoring
+from __future__ import annotations
+
+import joblib, requests, numpy as np, pandas as pd
+from datetime import datetime
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
-app  = FastAPI(title="Skin Risk API")
-model = joblib.load("skin_uv_model.pkl")   # <-- your LightGBM model
+app = FastAPI(title="Skin Risk API")
 
-# ---------- request / response schemas ----------
+# ---------------------------------------------------------------------- #
+#  Model & metadata
+# ---------------------------------------------------------------------- #
+MODEL          = joblib.load("skin_uv_model.pkl")
+MODEL_FEATURES = [
+    "uv_load_j", "temp_day_mean", "rh_day_mean", "net_therm_j",
+    "uv_load_j_7d", "temp_day_mean_7d", "rh_day_mean_7d",
+    "uv_temp_combo", "season_sin", "season_cos",
+]  # <-- exactly what the LightGBM classifier expects (10 cols)
+
+# ---------------------------------------------------------------------- #
+#  Request schema
+# ---------------------------------------------------------------------- #
 class Payload(BaseModel):
     lat: float
     lon: float
-    skinTone: int  # 1-5
-    gender: str    # 'Male' | 'Female' | 'Other'
+    skinTone: int  # 1-4  (1 = light ... 4 = deep)
+    gender: str    # kept for future use
 
-# ---------- helper to fetch hourly weather (Open-Meteo) ----------
-def fetch_daylight(lat, lon):
-    # 1) Request only the fields the Forecast API actually provides
+# ---------------------------------------------------------------------- #
+#  Helper – download today’s daylight records & compute features
+# ---------------------------------------------------------------------- #
+def daylight_features(lat: float, lon: float) -> pd.DataFrame:
     url = (
         "https://api.open-meteo.com/v1/forecast"
         f"?latitude={lat}&longitude={lon}"
         "&hourly=temperature_2m,dewpoint_2m,shortwave_radiation"
         "&timezone=auto"
     )
-    resp = requests.get(url, timeout=10)
-    data = resp.json()
-    # Debug if you want:
-    # print("DEBUG keys:", data.keys())
+    data = requests.get(url, timeout=10).json()
+
     hourly = data.get("hourly")
     if not hourly:
-        raise HTTPException(502, f"Weather provider error: {data.get('reason')}")
+        raise HTTPException(502, f"Weather provider error: {data}")
+
     df = pd.DataFrame(hourly)
     df["time"] = pd.to_datetime(df["time"])
 
-    # 2) Only daylight hours (shortwave_radiation > 0)
+    # daylight only – short-wave radiation > 0 W m-2
     df = df[df["shortwave_radiation"] > 0]
 
-    # 3) Compute temp (°C) & RH %
+    if df.empty:          # night or polar darkness – return sentinel row
+        now = pd.Timestamp.now(tz=data["timezone"])
+        return pd.DataFrame([{
+            "uv_load_j": 0.0,
+            "temp_day_mean": np.nan,
+            "rh_day_mean": np.nan,
+            "net_therm_j": 0.0,
+            "uv_load_j_7d": 0.0,
+            "temp_day_mean_7d": np.nan,
+            "rh_day_mean_7d": np.nan,
+            "uv_temp_combo": 0.0,
+            "season_sin": np.sin(2 * np.pi * now.dayofyear / 365.25),
+            "season_cos": np.cos(2 * np.pi * now.dayofyear / 365.25),
+            "temp_latest": np.nan,
+            "uv_latest": 0.0,
+        }])
+
+    # derive RH%
     df["temp_c"] = df["temperature_2m"]
     df["dew_c"]  = df["dewpoint_2m"]
-    alpha_d = (17.625 * df["dew_c"]) / (243.04 + df["dew_c"])
-    alpha_t = (17.625 * df["temp_c"]) / (243.04 + df["temp_c"])
+    alpha_d      = (17.625 * df["dew_c"])  / (243.04 + df["dew_c"])
+    alpha_t      = (17.625 * df["temp_c"]) / (243.04 + df["temp_c"])
     df["rh_pct"] = 100 * np.exp(alpha_d - alpha_t)
 
-    # 4) Aggregate into one-row DataFrame
-    out = {
-        "uv_load_j":     df["shortwave_radiation"].sum(),  # J/m²
+    latest = df.sort_values("time").iloc[-1]  # most recent daylight reading
+
+    features = {
+        # single-day integrals / means
+        "uv_load_j": df["shortwave_radiation"].sum(),
         "temp_day_mean": df["temp_c"].mean(),
-        "rh_day_mean":   df["rh_pct"].mean(),
-        # we no longer have net_therm_j from forecast
-        "net_therm_j":   0.0
+        "rh_day_mean": df["rh_pct"].mean(),
+        "net_therm_j": 0.0,                     # not available – keep placeholder
+
+        # simple 7-day placeholders
+        "uv_load_j_7d": df["shortwave_radiation"].sum(),
+        "temp_day_mean_7d": df["temp_c"].mean(),
+        "rh_day_mean_7d": df["rh_pct"].mean(),
+
+        # interaction + seasonality
+        "uv_temp_combo": df["shortwave_radiation"].sum() * df["temp_c"].mean(),
+        "season_sin": np.sin(2 * np.pi * latest.time.dayofyear / 365.25),
+        "season_cos": np.cos(2 * np.pi * latest.time.dayofyear / 365.25),
+
+        # “extra” – sent back to UI
+        "temp_latest": latest["temp_c"],
+        "uv_latest":   latest["shortwave_radiation"],
     }
 
-    # 5) Fake the 7-day rolling stats with the same-day value
-    for k in ["uv_load_j","temp_day_mean","rh_day_mean"]:
-        out[f"{k}_7d"] = out[k]
+    return pd.DataFrame([features])
 
-    # 6) Interaction + seasonality
-    out["uv_temp_combo"] = out["uv_load_j"] * out["temp_day_mean"]
-    doy = df["time"].dt.dayofyear.iloc[0]
-    out["season_sin"] = np.sin(2 * np.pi * doy / 365.25)
-    out["season_cos"] = np.cos(2 * np.pi * doy / 365.25)
+# ---------------------------------------------------------------------- #
+#  Simple advice generator
+# ---------------------------------------------------------------------- #
+def advice_text(score: int, tone: int) -> tuple[str, str]:
+    if score > 80:
+        level, msg = "Very High", "SPF 50+, long sleeves, seek shade 11-3 pm."
+    elif score > 60:
+        level, msg = "High", "SPF 30-50 every 2 h and a wide-brim hat."
+    elif score > 40:
+        level, msg = "Moderate", "SPF 30 if outside > 30 min."
+    else:
+        level, msg = "Low", "SPF 15 moisturiser is enough."
 
-    return pd.DataFrame([out])
+    if tone <= 2 and level != "Low":
+        msg += " (Fair skin → extra caution.)"
+    return level, msg
 
+# ---------------------------------------------------------------------- #
+#  Endpoints
+# ---------------------------------------------------------------------- #
+@app.get("/healthz")
+def health() -> dict[str, bool]:
+    return {"ok": True}
 
-# ---------- basic text recommendation ----------
-def make_advice(prob, skinTone):
-    if prob>0.8: level, rec = "Very High", "SPF 50+, long sleeves, seek shade 11-3 pm."
-    elif prob>0.6: level, rec = "High", "Apply SPF 30-50 every 2h, wear a hat."
-    elif prob>0.4: level, rec = "Moderate", "Use SPF 30 if outdoors >30 min."
-    else: level, rec = "Low", "Basic moisturizer with SPF 15 is fine."
-
-    if skinTone<=2 and level!="Low":
-        rec += " (Fair skin—extra caution.)"
-    return level, rec
-
-# ---------- POST /predict ----------
 @app.post("/predict")
 def predict(p: Payload):
-    X = fetch_daylight(p.lat, p.lon)
-    prob = float(model.predict_proba(X)[0,1])
-    level, rec = make_advice(prob, p.skinTone)
-    return {"prob":prob, "level":level, "recommendation":rec}
+    df = daylight_features(p.lat, p.lon)
+    night = df.iloc[0]["uv_latest"] == 0.0
+
+    if night:
+        score = 5                   # minimal risk after sunset
+    else:
+        prob  = float(MODEL.predict_proba(df[MODEL_FEATURES])[0, 1])
+        score = int(round(prob * 100))
+
+    # scale for complexion (light +30 → deep +0)
+    score = min(100, max(0, score + 10 * (4 - p.skinTone)))
+
+    level, rec = advice_text(score, p.skinTone)
+    latest     = df.iloc[0]
+
+    return {
+        "score":  score,
+        "level":  level,
+        "advice": rec,
+        "temp_c": None if night else round(float(latest["temp_latest"]), 1),
+        "uv_wm2": 0.0  if night else round(float(latest["uv_latest"]),  1),
+    }

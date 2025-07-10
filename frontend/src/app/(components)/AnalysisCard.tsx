@@ -4,12 +4,13 @@ import Card from '@mui/material/Card';
 import Typography from '@mui/material/Typography';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import PlaceIcon from '@mui/icons-material/Place';
-//import ThermostatIcon from '@mui/icons-material/Thermostat';
+import ThermostatIcon from '@mui/icons-material/Thermostat';
+import WbSunnyIcon    from '@mui/icons-material/WbSunny';
 import { useData } from '../(providers)/data-provider';
 import { useSettings } from '../(providers)/settings-provider';
 
 export default function AnalysisCard(){
-  const { risk, loading } = useData();
+  const { risk, weather, loading } = useData();
   const { location, skinTone } = useSettings();
 
   if(loading) return null;
@@ -20,6 +21,14 @@ export default function AnalysisCard(){
       <Typography variant="body2" className="flex items-center gap-1">
         <PlaceIcon fontSize="small"/> {location?.city ?? '—'}
       </Typography>
+      
+      <Typography variant="body2" className="flex items-center gap-1">
+        <ThermostatIcon fontSize="small"/>
+        {weather?.temp ?? '—'} °C&nbsp;|&nbsp;
+        <WbSunnyIcon fontSize="small" sx={{ml:0.5}}/>
+        UV&nbsp;{weather?.uv ?? '—'}
+      </Typography>
+      
       <Typography variant="body2" className="flex items-center gap-1">
         <AccessTimeIcon fontSize="small"/> {new Date().toLocaleTimeString()}
       </Typography>
