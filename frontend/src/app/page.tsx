@@ -25,8 +25,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 
 
 export default function Home() {
-  const { fetchNow, loading } = useData();
-  const { backendReady } = useData();
+  const { fetchNow, loading, backendReady } = useData();
   const [sheetOpen, setSheetOpen] = useState(false);
 
   useAutoRefresh(fetchNow);
