@@ -15,6 +15,13 @@ import Button from '@mui/material/Button';
 import { useSettings } from '../(providers)/settings-provider';
 import { SelectChangeEvent } from '@mui/material/Select';
 
+const TONE_COLOURS:Record<string,string>={
+  light:'#f4d8c6',
+  medium:'#d9a484',
+  dark:'#8d5524',
+  deep:'#5d4033',
+};
+
 export default function ProfileSheet({
   open, onClose
 }: { open: boolean; onClose: () => void }) {
@@ -37,7 +44,11 @@ export default function ProfileSheet({
             onChange={(_, v) => v && set({ skinTone: v })}
           >
             {['light', 'medium', 'dark', 'deep'].map(t => (
-              <ToggleButton key={t} value={t}>{t}</ToggleButton>
+              <ToggleButton key={t} value={t} 
+              sx={{
+                bgcolor: TONE_COLOURS[t],
+                '&.Mui-selected': { outline:'2px solid', outlineColor:'primary.main', color:'common.black' }
+              }}>{t}</ToggleButton>
             ))}
           </ToggleButtonGroup>
         </div>
