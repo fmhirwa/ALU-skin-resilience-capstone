@@ -34,7 +34,9 @@ export default function RiskCard() {
       <Typography variant="h6">Current Risk</Typography>
 
       {loading ? (
-        <CircularProgress />
+        <CircularProgress 
+        sx={{ '& .MuiCircularProgress-circle': { color: colour}}}
+        />
       ) : (
         <Box position="relative" display="inline-flex">
           {/* Gauge ---------------------------------------------------------- */}
@@ -43,7 +45,7 @@ export default function RiskCard() {
             size={130}
             thickness={5}
             value={risk ?? 0}
-            sx={{ color: colour }}
+            sx={{ circle: {color: colour }}}
           />
 
           {/* Centre number -------------------------------------------------- */}
