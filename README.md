@@ -7,7 +7,7 @@ This project builds a daylight-focused machine-learning pipeline that links ERA5
 
 ## UI mockups can be found in the UI folder.
 ## Demo Frontend : https://youtu.be/CjdaFZ9JN3Q
-## Demo Final
+## Demo Final: https://youtu.be/kJSIW8kwW5c
 
 # Project Summary
 
