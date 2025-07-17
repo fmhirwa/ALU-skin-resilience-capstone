@@ -1,5 +1,5 @@
 # ALU-skin-resilience-capstone
-Project Proposal: https://docs.google.com/document/d/1rYyHFnxY5h8V_OoRysODZJEo1P_sO1S_znwrXnp56BU/edit?usp=sharing
+Project Proposal: [Google Docs Link](https://docs.google.com/document/d/1U6Kpyz8hYpoDxFvIvnkUzqx9yUppbbLSSspl0DKzjpQ/edit?usp=sharing)
 
 ## Description: 
 
