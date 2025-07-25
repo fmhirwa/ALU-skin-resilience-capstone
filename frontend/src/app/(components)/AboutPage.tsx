@@ -53,13 +53,13 @@ export default function AboutPage() {
         <Typography paragraph>
           After filtering out nighttime hours (where UV = 0), we compute key features:
         </Typography>
-        <ul>
+        <>
           <li><b>uv_load_j</b>: total UV exposure (sum of short-wave radiation)</li>
           <li><b>temp_day_mean</b>: mean daytime temperature</li>
           <li><b>rh_day_mean</b>: mean daytime relative humidity</li>
           <li><b>uv_temp_combo</b>: uv_load_j × temp_day_mean</li>
           <li><b>season_sin/cos</b>: cyclical encoding of the day of year</li>
-        </ul>
+        </>
 
         {/* 2.3 Model train/test */}
         <Typography paragraph>
