@@ -12,6 +12,8 @@ app = FastAPI(title="Skin Risk API")
 origins = [
     "http://localhost:3000",        # Next.js front-end during dev
     "https://alu-capstone-skin.onrender.com",
+    "https://skin-frontend.onrender.com", #source in prod
+    "http://127.0.0.1:3000",
 ]
 
 app.add_middleware(
