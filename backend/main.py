@@ -3,10 +3,24 @@ from __future__ import annotations
 
 import joblib, requests, numpy as np, pandas as pd
 from datetime import datetime
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
 app = FastAPI(title="Skin Risk API")
+
+origins = [
+    "http://localhost:3000",        # Next.js front-end during dev
+    "https://alu-capstone-skin.onrender.com",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,          # or ["*"] to allow everything
+    allow_credentials=True,
+    allow_methods=["*"],            # GET, POST, PUT, DELETE, etc.
+    allow_headers=["*"],            # Authorization, Content-Type, etc.
+)
 
 # ---------------------------------------------------------------------- #
 #  Model & metadata

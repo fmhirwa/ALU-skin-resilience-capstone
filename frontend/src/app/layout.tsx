@@ -1,18 +1,16 @@
-/* src/app/layout.tsx */
-/*'use client';*/
-
+// src/app/layout.tsx
 import type { Metadata } from 'next';
 import './globals.css';
 
 import { SettingsProvider } from './(providers)/settings-provider';
-import { DataProvider }     from './(providers)/data-provider';
-import MuiProvider          from './(providers)/mui-provider';
-import ServiceWorkerBridge  from './(components)/ServiceWorkerBridge';
+import MuiProvider from './(providers)/mui-provider';
+import { DataProvider } from './(providers)/data-provider';
+import ServiceWorkerBridge from './(components)/ServiceWorkerBridge';
+import HeaderLoader from './(components)/HeaderLoader';
 
 export const metadata: Metadata = {
   title: 'Urban Skin Health',
 };
-
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -21,7 +19,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <SettingsProvider>
           <MuiProvider>
             <DataProvider>
-              <ServiceWorkerBridge /> 
+              <ServiceWorkerBridge />
+              {/* Client-only header */}
+              <HeaderLoader />
               {children}
             </DataProvider>
           </MuiProvider>
