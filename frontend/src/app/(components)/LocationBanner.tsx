@@ -55,7 +55,7 @@ export default function LocationBanner() {
   return (
     <Chip
       icon={<EditIcon />}
-      label={location?.city || 'Fetch Location'}
+      label={location?.city || 'Search Custom Location'}
       onClick={() => setEditing(true)}
       className="mt-4 ml-4"
       variant="outlined"

@@ -53,13 +53,13 @@ export default function AboutPage() {
         <Typography paragraph>
           After filtering out nighttime hours (where UV = 0), we compute key features:
         </Typography>
-        <>
+        <ul>
           <li><b>uv_load_j</b>: total UV exposure (sum of short-wave radiation)</li>
           <li><b>temp_day_mean</b>: mean daytime temperature</li>
           <li><b>rh_day_mean</b>: mean daytime relative humidity</li>
           <li><b>uv_temp_combo</b>: uv_load_j × temp_day_mean</li>
           <li><b>season_sin/cos</b>: cyclical encoding of the day of year</li>
-        </>
+        </ul>
 
         {/* 2.3 Model train/test */}
         <Typography paragraph>
@@ -70,14 +70,16 @@ export default function AboutPage() {
         {/* 2.4 On-device inference */}
         <Typography paragraph>
           At runtime, tapping “Refresh” runs the model locally on your browser:
-          <>
+        </Typography>
+          <ul>
             <li>Fetch today’s UV & temperature curve.</li>
             <li>Compute provisional risk score (0–100).</li>
             <li>Shift by up to 30% points for lighter skin tones.</li>
             <li>Bucket into Low (0–40), Moderate (41–80) or High (81–100).</li>
-          </>
+          </ul>
+          <p>
           No intermediate data ever leaves your device, and everything is discarded when you close the tab.
-        </Typography>
+          </p>
 
 
       {/* 3 - Risk spectrum -------------------------------------------- */}
@@ -104,7 +106,8 @@ export default function AboutPage() {
             '& li': { mb: 1 },
             listStyleType: 'disc',
           }}
-        >
+        > </Typography>
+        <ul>
           <li>
             <strong>Low (0–30):</strong> UV exposure is mild—only minimal cumulative damage over time.  
             A lightweight SPF 15 moisturizer is generally enough for quick errands or brief outdoor breaks.
@@ -117,7 +120,8 @@ export default function AboutPage() {
             <strong>High (71–100):</strong> Significant risk of immediate and long-term skin damage.  
             Apply SPF 50+, cover up with long sleeves and wide-brim hats, and seek shade, especially between 11 am–3 pm.
           </li>
-        </Typography>
+        </ul>
+        
 
       {/* 4 - Skin-tone guide ------------------------------------------ */}
       <Typography variant="h5" sx={{ mt: 4 }}>4 · Skin-tone guide and baseline SPF - Sun Protection Factor</Typography>

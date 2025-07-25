@@ -6,7 +6,8 @@ import { SettingsProvider } from './(providers)/settings-provider';
 import MuiProvider from './(providers)/mui-provider';
 import { DataProvider } from './(providers)/data-provider';
 import ServiceWorkerBridge from './(components)/ServiceWorkerBridge';
-import HeaderLoader from './(components)/HeaderLoader';
+import ClientAppBar from './(components)/ClientAppBar';
+//import HeaderLoader from './(components)/HeaderLoader';
 
 export const metadata: Metadata = {
   title: 'Urban Skin Health',
@@ -21,7 +22,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <DataProvider>
               <ServiceWorkerBridge />
               {/* Client-only header */}
-              <HeaderLoader />
+              <ClientAppBar />
               {children}
             </DataProvider>
           </MuiProvider>

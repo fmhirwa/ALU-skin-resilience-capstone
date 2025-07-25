@@ -4,7 +4,7 @@
 import React from 'react';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
-import Link from 'next/link';      
+//import Link from 'next/link';      
 import Button from '@mui/material/Button'; 
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
@@ -24,12 +24,13 @@ export default function ClientAppBar() {
         <Toolbar className="justify-between">
           <Typography variant="h6">Urban Skin Health</Typography>
               {<Button
-                component={Link}
+                component= "a"
                 href="https://alu-capstone-skin.onrender.com"
+                target='_blank'
                 color="inherit"
                 sx={{ fontWeight: 500, textTransform: 'none' }}
                 >
-                Force Backend
+                Start Backend
             </Button>}
           <div className="flex items-center gap-1">
             <IconButton disabled={loading} onClick={fetchNow}>

@@ -12,6 +12,7 @@ import LiveConditionsCard from './(components)/LiveConditionsCard';
 import AboutPage from './(components)/AboutPage';
 import RecommendationCard from './(components)/RecommendationCard';
 import AutoRefreshSnackbar from './(components)/AutoRefreshSnackbar';
+//import ClientAppBar        from './(components)/ClientAppBar';
 
 // Dynamically import the header as a client-only component
 //const ClientAppBar = dynamic(

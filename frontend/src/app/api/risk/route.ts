@@ -12,7 +12,7 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: 'missing params' }, { status: 400 })
   }
 
-  // Your Render/FastAPI URL
+  // Render/FastAPI URL
   const BACKEND = process.env.BACKEND_URL!
 
   // call the FastAPI /predict endpoint
@@ -32,10 +32,12 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: text }, { status: resp.status })
   }
 
-  const { prob, recommendation } = await resp.json()
+  //const { prob, recommendation } = await resp.json()
 
-  // scale 0–1 → 0–100 for your CircularProgress
-  const score = Math.round(prob * 100)
+  //const score = Math.round(prob * 100)
 
-  return NextResponse.json({ score, advice: recommendation })
+  const { score, advice } = await resp.json()
+  return NextResponse.json({ score, advice })
+
+  //return NextResponse.json({ score, advice: recommendation })
 }

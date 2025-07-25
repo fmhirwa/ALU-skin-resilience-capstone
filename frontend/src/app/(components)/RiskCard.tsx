@@ -1,70 +1,71 @@
-// src/app/(components)/RiskCard.tsx
 'use client';
 
 import React from 'react';
-import Card           from '@mui/material/Card';
-import Typography     from '@mui/material/Typography';
+import Card            from '@mui/material/Card';
+import Typography      from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress';
-import Box            from '@mui/material/Box';
-import { grey }       from '@mui/material/colors';
-import { useData }    from '../(providers)/data-provider';
+import Box             from '@mui/material/Box';
+import { grey }        from '@mui/material/colors';
+import { useData }     from '../(providers)/data-provider';
 
-/* ------------------------------------------------------------------ */
-/* Helper – map score → brand colour                                  */
-/* ------------------------------------------------------------------ */
-const riskToColour = (risk: number | null): string => {
-  if (risk === null)     return grey[400];
-  if (risk <= 33)        return 'var(--risk-low)';   // green
-  if (risk <= 66)        return 'var(--risk-mid)';   // amber
-  return 'var(--risk-high)';                         // red
-};
+const RING_SIZE   = 140;      // px
+const RING_THICK  = 5;        // px
 
-/* ------------------------------------------------------------------ */
-/* Component                                                         */
-/* ------------------------------------------------------------------ */
+function riskColour(risk: number | null) {
+  if (risk === null) return grey[400];
+  if (risk <= 33)     return 'var(--risk-low)';
+  if (risk <= 66)     return 'var(--risk-mid)';
+  return 'var(--risk-high)';
+}
+
 export default function RiskCard() {
   const { risk, lastUpdated, loading } = useData();
-  const colour = riskToColour(risk);
+  const colour = riskColour(risk);
 
   return (
     <Card
       sx={{
-        border: 2,
-        borderColor: colour,
         p: 4,
+        minHeight: 260,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        //minHeight: 260,          // make the card visibly taller
+        border: 2,
+        borderColor: colour,
       }}
     >
-      <Typography variant="h6">Current Risk</Typography>
+      <Typography variant="h6" fontWeight={600}>
+        Current&nbsp;Risk
+      </Typography>
 
-      {/* ---- Gauge / Spinner ---------------------------------------- */}
       {loading ? (
         <CircularProgress
           sx={{
-            mt: 2,
-            '& .MuiCircularProgress-circle': { color: colour },
+            mt: 3,
+            '& .MuiCircularProgress-circle': { stroke: colour },
           }}
         />
       ) : (
-        <Box position="relative" display="inline-flex" mt={2}>
+        <Box mt={3} position="relative" display="inline-flex">
           <CircularProgress
             variant="determinate"
-            size={140}
-            thickness={5}
             value={risk ?? 0}
-            sx={{ svg: { color: colour } }}   // colour the whole svg
+            size={RING_SIZE}
+            thickness={RING_THICK}
+            sx={{
+              color: colour,
+              '& .MuiCircularProgress-circle': {
+                strokeLinecap: 'round',
+              },
+            }}
           />
-
-          {/* centred score */}
+          {/* centred number */}
           <Box
             position="absolute"
             top={0}
             left={0}
-            bottom={0}
             right={0}
+            bottom={0}
             display="flex"
             alignItems="center"
             justifyContent="center"
@@ -76,9 +77,14 @@ export default function RiskCard() {
         </Box>
       )}
 
-      {/* ---- timestamp --------------------------------------------- */}
-      <Typography variant="body2" color="text.secondary" sx={{ mt: 'auto' }}>
-        {lastUpdated ? `Updated ${lastUpdated.toLocaleTimeString()}` : '—'}
+      <Typography
+        variant="body2"
+        color="text.secondary"
+        sx={{ mt: 'auto' }}
+      >
+        {lastUpdated
+          ? `Updated ${lastUpdated.toLocaleTimeString()}`
+          : '—'}
       </Typography>
     </Card>
   );
