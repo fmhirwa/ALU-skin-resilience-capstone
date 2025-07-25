@@ -5,53 +5,48 @@ import Typography from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
 import { grey } from '@mui/material/colors';
-
 import { useData } from '../(providers)/data-provider';
 
-
 function riskToColour(risk: number | null): string {
-/** OLD
-  if (risk === null) return grey[400];
-  if (risk <= 33)   return '#39c46e';   // ✔ low   (green)
-  if (risk <= 66)   return '#f6c344';   // ⚠ mid   (amber)
-  return '#e04b4b';                      // ✖ high  (red)
-*/
-  /*  CSS variables: */
-
   if (risk === null) return grey[400];
   if (risk <= 33)    return 'var(--risk-low)';
   if (risk <= 66)    return 'var(--risk-mid)';
   return 'var(--risk-high)';
 }
 
-/** Component -------------------------------------------------------------- */
 export default function RiskCard() {
   const { risk, lastUpdated, loading } = useData();
   const colour = riskToColour(risk);
 
   return (
-    <Card className="p-6 flex flex-col items-center gap-4 relative">
+    <Card
+      sx={{
+        borderColor: colour,
+        borderWidth: 2,
+        borderStyle: 'solid',
+        p: 4,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        minHeight: 260,
+      }}
+    >
       <Typography variant="h6">Current Risk</Typography>
 
       {loading ? (
         <CircularProgress
-        //color='inherit'
-        sx={{ '& .MuiCircularProgress-circle': { color: colour}}}
-        //circle: {stoke: colour }
-      
+          sx={{ mt: 2, '& .MuiCircularProgress-circle': { color: colour } }}
         />
       ) : (
-        <Box position="relative" display="inline-flex">
-          {/* Gauge ---------------------------------------------------------- */}
+        <Box position="relative" display="inline-flex" mt={2}>
           <CircularProgress
             variant="determinate"
-            size={130}
+            size={140}
             thickness={5}
             value={risk ?? 0}
-            sx={{ circle: {color: colour }}}
+            sx={{ circle: { color: colour } }}
           />
 
-          {/* Centre number -------------------------------------------------- */}
           <Box
             position="absolute"
             top={0}
@@ -62,16 +57,21 @@ export default function RiskCard() {
             alignItems="center"
             justifyContent="center"
           >
-            <Typography variant="h5" sx={{ color: colour }}>
+            <Typography variant="h4" sx={{ color: colour }}>
               {risk ?? '—'}
             </Typography>
           </Box>
         </Box>
       )}
 
-      {/* Timestamp ---------------------------------------------------------- */}
-      <Typography variant="body2" color="text.secondary">
-        {lastUpdated ? `Updated ${lastUpdated.toLocaleTimeString()}` : '—'}
+      <Typography
+        variant="body2"
+        color="text.secondary"
+        sx={{ mt: 'auto' }}
+      >
+        {lastUpdated
+          ? `Updated ${lastUpdated.toLocaleTimeString()}`
+          : '—'}
       </Typography>
     </Card>
   );

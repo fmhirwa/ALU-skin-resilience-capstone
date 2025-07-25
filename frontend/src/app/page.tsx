@@ -2,21 +2,22 @@
 'use client';
 
 import React from 'react';
-import dynamic from 'next/dynamic';
+//import dynamic from 'next/dynamic';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import LocationBanner from './(components)/LocationBanner';
 import RiskCard from './(components)/RiskCard';
-import AnalysisCard from './(components)/AnalysisCard';
+import LiveConditionsCard from './(components)/LiveConditionsCard';
+import AboutPage from './(components)/AboutPage';
 import RecommendationCard from './(components)/RecommendationCard';
 import AutoRefreshSnackbar from './(components)/AutoRefreshSnackbar';
 
 // Dynamically import the header as a client-only component
-const ClientAppBar = dynamic(
-  () => import('./(components)/ClientAppBar'),
-  { ssr: false }
-);
+//const ClientAppBar = dynamic(
+//  () => import('./(components)/ClientAppBar'),
+//  { ssr: false }
+//); DIscarded/hydration error
 
 export default function Home() {
   return (
@@ -31,13 +32,15 @@ export default function Home() {
           <Grid size={{ xs: 12, md: 4 }}>
             <RiskCard />
           </Grid>
-          <Grid size={{ xs: 12, md: 8 }}>
+          <Grid size={{ xs: 12, md: 4 }}>
+            <LiveConditionsCard />
+          </Grid>
+          <Grid size={{ xs: 12, md: 4 }}>
             <RecommendationCard />
           </Grid>
-          <Grid size={{ xs: 12, md: 8 }}>
-            <AnalysisCard />
+           </Grid><Grid size={{ xs: 12, md: 8 }}>
+            <AboutPage />
           </Grid>
-        </Grid>
       </Container>
 
       <AutoRefreshSnackbar />

@@ -13,20 +13,28 @@ export default function LocationBanner() {
 
   const save = () => {
     /* naive geocoding via Nominatim; replace with Places API */
-    fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(draft)}&format=json&limit=1`)
+    fetch(
+      `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
+        draft
+      )}&format=json&limit=1`
+    )
       .then(r => r.json())
-      .then((arr: { lat: string; lon: string; display_name: string }[]) => {
-        if (arr[0]) {
-          const { lat, lon, display_name } = arr[0];
-          set({ location: { lat: +lat, lon: +lon, city: display_name } });
+      .then(
+        (arr: { lat: string; lon: string; display_name: string }[]) => {
+          if (arr[0]) {
+            const { lat, lon, display_name } = arr[0];
+            set({
+              location: { lat: +lat, lon: +lon, city: display_name },
+            });
+          }
+          setEditing(false);
         }
-        setEditing(false);
-      });
+      );
   };
 
   if (editing) {
     return (
-      <div className="px-4 py-2">
+      <div className="px-4 py-2 mt-4 ml-4">
         <TextField
           fullWidth
           size="small"
@@ -35,7 +43,9 @@ export default function LocationBanner() {
           onChange={e => setDraft(e.target.value)}
           placeholder="Enter city or address"
           InputProps={{
-            endAdornment: <SaveIcon onClick={save} className="cursor-pointer" />
+            endAdornment: (
+              <SaveIcon onClick={save} className="cursor-pointer" />
+            ),
           }}
         />
       </div>
@@ -45,9 +55,9 @@ export default function LocationBanner() {
   return (
     <Chip
       icon={<EditIcon />}
-      label={location?.city || 'Fetching location…'}
+      label={location?.city || 'Fetch Location'}
       onClick={() => setEditing(true)}
-      className="mx-4 my-2"
+      className="mt-4 ml-4"
       variant="outlined"
       color="primary"
     />
