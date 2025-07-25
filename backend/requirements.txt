@@ -6,3 +6,5 @@ requests
 lightgbm
 joblib
 scikit-learn
+fastapi
+uvicorn

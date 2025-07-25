@@ -19,6 +19,7 @@ origins = [
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,          # or ["*"] to allow everything
+    #allow_origin_regex=r"^(https?://localhost(:\d+)?|https://.*\.onrender\.com)$",
     allow_credentials=True,
     allow_methods=["*"],            # GET, POST, PUT, DELETE, etc.
     allow_headers=["*"],            # Authorization, Content-Type, etc.
