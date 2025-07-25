@@ -4,8 +4,8 @@
 import React from 'react';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
-import Link from 'next/link';      
-import Button from '@mui/material/Button'; 
+//import Link from 'next/link';      
+//import Button from '@mui/material/Button'; 
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import RefreshIcon from '@mui/icons-material/Refresh';
@@ -23,14 +23,14 @@ export default function ClientAppBar() {
       <AppBar position="sticky">
         <Toolbar className="justify-between">
           <Typography variant="h6">Urban Skin Health</Typography>
-              <Button
+              {/*<Button
                 component={Link}
-                href="/about"
+                href="./"
                 color="inherit"
                 sx={{ fontWeight: 500, textTransform: 'none' }}
                 >
                 First time?
-            </Button>
+            </Button>*/}
           <div className="flex items-center gap-1">
             <IconButton disabled={loading} onClick={fetchNow}>
               <RefreshIcon />
