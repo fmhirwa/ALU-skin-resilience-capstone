@@ -61,6 +61,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   /* ---------- main fetch  -------------------------------------------- */
   const fetchNow = useCallback(async () => {
     if (!settings.location) return;          // wait until we have geo-coords
+    console.log("📍 Using location:", settings.location);
     try {
       setState(p => ({ ...p, loading: true, error: null }));
 
@@ -76,6 +77,8 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (!res.ok) throw new Error(await res.text());
 
       const { score, advice, temp_c, uv_wm2 } = await res.json();
+      console.log("🚀 Backend response:", { score, advice, temp_c, uv_wm2 });
+
 
       setState(p => ({
         ...p,

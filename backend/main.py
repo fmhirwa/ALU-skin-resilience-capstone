@@ -16,7 +16,7 @@ MODEL_FEATURES = [
     "uv_load_j", "temp_day_mean", "rh_day_mean", "net_therm_j",
     "uv_load_j_7d", "temp_day_mean_7d", "rh_day_mean_7d",
     "uv_temp_combo", "season_sin", "season_cos",
-]  # <-- exactly what the LightGBM classifier expects (10 cols)
+]  
 
 # ---------------------------------------------------------------------- #
 #  Request schema
