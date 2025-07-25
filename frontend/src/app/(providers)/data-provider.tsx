@@ -49,7 +49,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     let cancelled = false;
     const ping = async () => {
       try {
-        const r = await fetch(`${API_BASE}/api/healthz`, { cache: 'no-store' });
+        const r = await fetch(`${API_BASE}/healthz`, { cache: 'no-store' });
         if (!cancelled && r.ok) setState(p => ({ ...p, backendReady: true }));
       } catch {/* ignore & retry */}
 
@@ -67,7 +67,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       setState(p => ({ ...p, loading: true, error: null }));
 
-      const res = await fetch(`${API_BASE || '/api'}/predict`, {
+      const res = await fetch(`${API_BASE}/predict`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
