@@ -11,7 +11,7 @@ const TONE_MAP = { light: 1, medium: 2, dark: 3, deep: 4 } as const;
    • At dev / prod  NEXT_PUBLIC_BACKEND_URL
      (http://127.0.0.1:8000  or  https://alu-capstone-skin.onrender.com)
    • If it’s missing we fall back to a Next-proxy at /api/*   */
-const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL?.trim() || process.env.NEXT_PUBLIC_BACKEND_URL;
+const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL?.trim();
 console.log('🌐🌐🌐API BASE:', API_BASE);
 console.log(`${API_BASE}/predict`)
 
