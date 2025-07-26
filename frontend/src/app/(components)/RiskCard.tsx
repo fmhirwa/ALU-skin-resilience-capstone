@@ -39,6 +39,7 @@ export default function RiskCard() {
       </Typography>
 
       {loading ? (
+
         <CircularProgress
           sx={{
             mt: 3,
@@ -50,6 +51,7 @@ export default function RiskCard() {
           <CircularProgress
             variant="determinate"
             value={risk ?? 0}
+
             size={RING_SIZE}
             thickness={RING_THICK}
             sx={{
