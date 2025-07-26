@@ -3,16 +3,9 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
-  --risk-low:#39c46e;
-  --risk-mid:#f6c344;
-  --risk-high:#e04b4b;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --risk-low:   #39c46e;
+  --risk-mid:   #f6c344;
+  --risk-high:  #e04b4b;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -22,8 +15,45 @@
   }
 }
 
+/* --- GLOBAL FONT --- */
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Futura", Arial, Helvetica, sans-serif;
+  line-height: 1.6;
+  margin: 0;
+  padding: 0;
+}
+
+/* --- HEADING HIERARCHY --- */
+h1, .MuiTypography-h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.5em;
+}
+h2, .MuiTypography-h2 {
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 0.5em;
+}
+h3, .MuiTypography-h3 {
+  font-size: 1.75rem;
+  font-weight: 500;
+  margin-bottom: 0.5em;
+}
+h4, .MuiTypography-h4 {
+  font-size: 1.5rem;
+  font-weight: 500;
+  margin-bottom: 0.4em;
+}
+h5, .MuiTypography-h5 {
+  font-size: 1.25rem;
+  font-weight: 500;
+  margin-bottom: 0.3em;
+}
+h6, .MuiTypography-h6 {
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: 0.2em;
 }

@@ -5,10 +5,6 @@ Project Proposal: [Google Docs Link](https://docs.google.com/document/d/1U6Kpyz8
 
 This project builds a daylight-focused machine-learning pipeline that links ERA5-Land atmospheric reanalysis with self-reported skin-damage data to predict daily “high-damage” risk for urban East Africa. We aggregate daylight surface-solar-radiation, 2-m temperature and relative humidity into daily totals and rolling seven-day indices—capturing the cumulative photo-thermal stress that drives premature skin ageing. A lightweight LightGBM gradient-boosted-tree model, trained with temporal cross-validation and class-balancing, transforms these engineered features into a calibrated probability that any given day will exceed a high-risk skin-damage threshold, providing a fast, interpretable baseline that already improves F1 from 0.40 to the mid-0.60s and sets the stage for future additions such as air-quality and cloud-cover effects.
 
-## UI mockups can be found in the UI folder.
-## Demo Frontend : https://youtu.be/CjdaFZ9JN3Q
-## Demo Final: https://youtu.be/kJSIW8kwW5c
-
 # Project Summary
 
 This project delivers an end-to-end “skin-risk dashboard” that blends a lightweight ML model, a FastAPI micro-service, and a React/Next.js front-end.
@@ -22,6 +18,29 @@ DataProvider pings /healthz until the dyno wakes, then calls /risk (a thin Next.
 
 Local dev – uvicorn main:app --reload starts the API on :8000; npm run dev launches the Next.js app on :3000 (proxying to :8000 unless NEXT_PUBLIC_BACKEND_URL is set). With both pieces live, the dashboard shows risk numbers immediately and updates on any change to location or profile.
 
+
+
+## UI mockups can be found in the UI folder.
+
+## Demo: https://youtu.be/CjdaFZ9JN3Q
+
+
+Local RUn
+
+cd backend
+
+# create & activate a venv
+python -m venv .venv
+# on macOS/Linux:
+source .venv/bin/activate
+# on Windows:
+.\.venv\Scripts\Activate.ps1
+
+# install dependencies
+pip install -r requirements.txt
+
+## Demo Frontend : https://youtu.be/CjdaFZ9JN3Q
+## Demo Final: https://youtu.be/kJSIW8kwW5c
 
 # Local RUn
 
@@ -48,7 +67,7 @@ cd ../frontend
 npm install
 npm run dev
 
-NEXT_PUBLIC_BACKEND_URL=http://localhost:8000
+NEXT_PUBLIC_BACKEND_URL=https://alu-capstone-skin.onrender.com
 
 # Hosted:
 
