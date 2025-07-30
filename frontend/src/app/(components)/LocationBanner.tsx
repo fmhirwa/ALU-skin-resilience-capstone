@@ -12,7 +12,7 @@ export default function LocationBanner() {
   const [draft, setDraft] = useState('');
 
   const save = () => {
-    /* naive geocoding via Nominatim; replace with Places API */
+    /* naive geocoding via Nominatim; could also use Places API if I get time*/
     fetch(
       `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
         draft
